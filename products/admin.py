@@ -92,3 +92,13 @@ class OrderAdmin(admin.ModelAdmin):
 class WaybillAdmin(admin.ModelAdmin):
     list_display = ('id', 'address_type', 'delivery_time', 'transport_time',
                     'status', 'weight', 'size', 'distance', 'order', 'ship_payment', 'district')
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('id', 'content', 'point', 'created_at', 'modified_at')
+
+
+@admin.register(Write)
+class WriteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'review', 'product_line')

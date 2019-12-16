@@ -177,8 +177,8 @@ class Waybill(models.Model):
 
     @property
     def ship_payment(self):
-        # TODO:
-        return 0
+        coef = 1500
+        return int(coef*self.distance)
 
     @property
     def district(self):
