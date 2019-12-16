@@ -6,8 +6,10 @@ authors = ["Huynh Phuc Nghi <nghiktkt22@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-django = "^3.0"
+django = "2.2"
 psycopg2 = "^2.8.4"
+bootstrap-admin = "^0.4.3"
+six = "^1.13.0"
 
 [tool.poetry.dev-dependencies]
 
