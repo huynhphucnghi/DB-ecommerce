@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Product, ProductLine, ProductCategory, Event
+from .models import Product, ProductLine, ProductCategory, Event, EventProductCategory
 
 
 @admin.register(Product)
@@ -17,9 +17,14 @@ class ProductLineAdmin(admin.ModelAdmin):
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',
-                    'description', 'status', 'event')
+                    'description', 'status')
 
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'content')
+
+
+@admin.register(EventProductCategory)
+class EventProductCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'event', 'category', 'amount')

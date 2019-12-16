@@ -39,8 +39,7 @@ class ProductCategory(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=1000)
     status = models.PositiveSmallIntegerField()
-    event = models.ForeignKey(
-        Event, on_delete=models.CASCADE, blank=True, null=True)
+    event = models.ManyToManyField(Event, through='EventProductCategory')
 
     def __str__(self):
         return self.name
@@ -67,3 +66,14 @@ class Product(models.Model):
 
     def __str__(self):
         return self.seri_number
+
+
+class EventProductCategory(models.Model):
+    event = models.OneToOneField(Event, on_delete=models.CASCADE,
+                                 blank=True, null=True)
+    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE,
+                                 blank=True, null=True)
+    amount = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.id)
