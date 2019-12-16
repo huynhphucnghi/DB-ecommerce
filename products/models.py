@@ -90,6 +90,69 @@ class ProductLine(models.Model):
         return str(self.id)
 
 
+class Cart(models.Model):
+    # TODO:account
+    product_line = models.ManyToManyField(ProductLine,
+                                          through="CartProductLine")
+
+    def __str__(self):
+        return str(self.id)
+
+
+class ReceiveInfo(models.Model):
+    # TODO:account
+    receive_name = models.CharField(max_length=100, blank=True, null=True)
+    street = models.CharField(max_length=100, blank=True, null=True)
+    sub_district = models.CharField(max_length=100, blank=True, null=True)
+    district = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Order(models.Model):
+    created_at = models.DateTimeField(default=timezone.now)
+    payment_status = models.PositiveSmallIntegerField(default=0)
+    shipping_status = models.PositiveSmallIntegerField(default=0)
+    delivery_place = models.CharField(default='', max_length=200)
+    # TODO:total_payment
+    receive_info = models.ForeignKey(ReceiveInfo, on_delete=models.CASCADE,
+                                     blank=True, null=True)
+    cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True,
+                                null=True)
+    product_line = models.ManyToManyField(ProductLine,
+                                          through="OrderProductLine")
+    discount_code = models.ManyToManyField(DiscountCode, blank=True)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Waybill(models.Model):
+    address_type = models.PositiveSmallIntegerField()
+    delivery_time = models.DateTimeField(default=timezone.now)
+    transport_time = models.DateTimeField(default=timezone.now)
+    status = models.PositiveSmallIntegerField()
+    weight = models.FloatField()
+    size = models.CharField(max_length=100)
+    distance = models.FloatField()
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True)
+
+    def __str__(self):
+        return str(self.id)
+
+    @property
+    def ship_payment(self):
+        # TODO:
+        return 0
+
+    @property
+    def district(self):
+        # TODO:
+        return 0
+
+
 class Product(models.Model):
     seri_number = models.CharField(max_length=200)
     manufacturing_date = models.DateTimeField('manufacturing date')
@@ -98,7 +161,8 @@ class Product(models.Model):
                              blank=True, null=True)
     zone = models.ForeignKey(WarehouseZone, on_delete=models.CASCADE,
                              blank=True, null=True)
-    # waybill = models.ForeignKey(Waybill, on_delete_models.CASCADE)
+    waybill = models.ForeignKey(Waybill, on_delete=models.CASCADE,
+                                blank=True, null=True)
 
     def __str__(self):
         return self.seri_number
@@ -142,45 +206,6 @@ class Write(models.Model):
         return str(self.id)
 
 
-class Cart(models.Model):
-    # TODO:account
-    product_line = models.ManyToManyField(ProductLine,
-                                          through="CartProductLine")
-
-    def __str__(self):
-        return str(self.id)
-
-
-class ReceiveInfo(models.Model):
-    # TODO:account
-    receive_name = models.CharField(max_length=100, blank=True, null=True)
-    street = models.CharField(max_length=100, blank=True, null=True)
-    sub_district = models.CharField(max_length=100, blank=True, null=True)
-    district = models.CharField(max_length=100, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
-
-    def __str__(self):
-        return str(self.id)
-
-
-class Order(models.Model):
-    created_at = models.DateTimeField(default=timezone.now)
-    payment_status = models.PositiveSmallIntegerField(default=0)
-    shipping_status = models.PositiveSmallIntegerField(default=0)
-    delivery_place = models.CharField(default='', max_length=200)
-    # TODO:total_payment
-    receive_info = models.ForeignKey(ReceiveInfo, on_delete=models.CASCADE,
-                                     blank=True, null=True)
-    cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True,
-                                null=True)
-    product_line = models.ManyToManyField(ProductLine,
-                                          through="OrderProductLine")
-    discount_code = models.ManyToManyField(DiscountCode, blank=True)
-
-    def __str__(self):
-        return str(self.id)
-
-
 class CartProductLine(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, blank=True,
                              null=True)
@@ -202,27 +227,3 @@ class OrderProductLine(models.Model):
 
     def __str__(self):
         return str(self.id)
-
-
-class Waybill(models.Model):
-    address_type = models.PositiveSmallIntegerField()
-    delivery_time = models.DateTimeField(default=timezone.now)
-    transport_time = models.DateTimeField(default=timezone.now)
-    status = models.PositiveSmallIntegerField()
-    weight = models.FloatField()
-    size = models.CharField(max_length=100)
-    distance = models.FloatField()
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True)
-
-    def __str__(self):
-        return str(self.id)
-
-    @property
-    def ship_payment(self):
-        # TODO:
-        return 0
-
-    @property
-    def district(self):
-        # TODO:
-        return 0
