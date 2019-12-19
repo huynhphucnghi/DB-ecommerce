@@ -227,12 +227,12 @@ class Review(models.Model):
 
 
 class Write(models.Model):
-    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
-                              null=True, blank=True)
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE,
+                                 null=True, blank=True)
     review = models.ForeignKey(Review, on_delete=models.CASCADE,
                                blank=True, null=True)
-    product_line = models.OneToOneField(ProductLine, on_delete=models.SET_NULL,
-                                        blank=True, null=True)
+    product_line = models.ForeignKey(ProductLine, on_delete=models.SET_NULL,
+                                     blank=True, null=True)
 
     def __str__(self):
         return str(self.id)
