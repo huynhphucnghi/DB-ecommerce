@@ -10,6 +10,7 @@ django = "2.2"
 psycopg2 = "^2.8.4"
 bootstrap-admin = "^0.4.3"
 six = "^1.13.0"
+sqlparse = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 

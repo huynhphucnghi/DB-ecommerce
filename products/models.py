@@ -1,8 +1,10 @@
 import datetime
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django.contrib.auth import get_user_model
 
 
 WAREHOUSE_STATUS_CHOICES = (
@@ -40,7 +42,8 @@ class WarehouseZone(models.Model):
 
 
 class Event(models.Model):
-    name = models.CharField(default='Event', max_length=100)
+    name = models.CharField(default='Event', max_length=100,
+                            unique=True)
     content = models.TextField(default='', max_length=1000)
     start_date = models.DateTimeField('start date', default=timezone.now)
     end_date = models.DateTimeField('end date', default=timezone.now)
@@ -50,7 +53,7 @@ class Event(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     description = models.TextField(max_length=1000)
     zone = models.ManyToManyField(WarehouseZone, blank=True)
 
@@ -59,7 +62,8 @@ class Category(models.Model):
 
 
 class ProductCategory(models.Model):
-    name = models.CharField(max_length=200, default='Product Category')
+    name = models.CharField(max_length=200, default='Product Category',
+                            unique=True)
     description = models.TextField(max_length=1000, default='No description')
     status = models.PositiveSmallIntegerField(choices=PRODUCTS_STATUS_CHOICES,
                                               default=1)
@@ -84,7 +88,8 @@ class EventProductCategory(models.Model):
 
 
 class DiscountCode(models.Model):
-    name = models.CharField(max_length=200, default='Discount Code')
+    name = models.CharField(max_length=200, default='Discount Code',
+                            unique=True)
     start_date = models.DateTimeField(default=timezone.now)
     discount_type = models.PositiveSmallIntegerField(default=0)
     discount_rate = models.FloatField(default=0.0)
@@ -112,7 +117,8 @@ class ProductLine(models.Model):
 
 
 class Cart(models.Model):
-    # TODO:account
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
+                              null=True, blank=True)
     product_line = models.ManyToManyField(ProductLine,
                                           through="CartProductLine")
 
@@ -121,9 +127,10 @@ class Cart(models.Model):
 
 
 class ReceiveInfo(models.Model):
-    # TODO:account
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
+                              null=True, blank=True)
     receive_name = models.CharField(max_length=100, blank=True,
-                                    null=True, default='Ten')
+                                    null=True, default='Ten', unique=True)
     street = models.CharField(max_length=100, blank=True,
                               null=True, default='Duong')
     sub_district = models.CharField(max_length=100, blank=True,
@@ -170,7 +177,8 @@ class Waybill(models.Model):
     weight = models.FloatField(default=0.0)
     size = models.CharField(max_length=100, default=0)
     distance = models.FloatField(default=0)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
@@ -186,7 +194,8 @@ class Waybill(models.Model):
 
 
 class Product(models.Model):
-    seri_number = models.CharField(max_length=200, default='Product')
+    seri_number = models.CharField(max_length=200, default='Product',
+                                   unique=True)
     manufacturing_date = models.DateTimeField(default=timezone.now)
     config = models.TextField(max_length=1000, default='No config')
     line = models.ForeignKey(ProductLine, on_delete=models.CASCADE,
@@ -201,7 +210,8 @@ class Product(models.Model):
 
 
 class Review(models.Model):
-    # account
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
+                              null=True, blank=True)
     content = models.TextField(default='', max_length=1000)
     point = models.FloatField(default=0.0)
     created_at = models.DateTimeField(default=timezone.now)
@@ -217,7 +227,8 @@ class Review(models.Model):
 
 
 class Write(models.Model):
-    # account
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
+                              null=True, blank=True)
     review = models.ForeignKey(Review, on_delete=models.CASCADE,
                                blank=True, null=True)
     product_line = models.OneToOneField(ProductLine, on_delete=models.SET_NULL,
@@ -239,8 +250,10 @@ class CartProductLine(models.Model):
 
 
 class OrderProductLine(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product_line = models.ForeignKey(ProductLine, on_delete=models.CASCADE,)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              null=True, blank=True)
+    product_line = models.ForeignKey(ProductLine, on_delete=models.CASCADE,
+                                     null=True, blank=True)
     amount = models.PositiveIntegerField(default=1)
     unit_price = models.PositiveIntegerField(default=1000)
 
